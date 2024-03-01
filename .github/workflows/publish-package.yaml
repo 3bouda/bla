@@ -1,0 +1,36 @@
+name: Publish NPM Package on Push to Main
+
+on:
+    push:
+        branches:
+            - main
+
+jobs:
+    publish:
+        runs-on: ubuntu-latest
+
+        steps:
+            - name: Checkout Repository
+              uses: actions/checkout@v2
+
+            - name: Set Up Node.js
+              uses: actions/setup-node@v3
+              with:
+                  node-version: 14
+
+            - name: Install Dependencies
+              run: npm install
+
+            - name: Build Package
+              run: npm run arrange && ng build --watch
+
+            - name: Publish Package
+              if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+              run: |
+                  if [ -n "${GITHUB_TOKEN}" ]; then
+                    npm publish --access public
+                  else
+                    echo "GITHUB_TOKEN is missing. Unable to publish NPM package."
+                  fi
+              env:
+                  NODE_AUTH_TOKEN: ${{secrets.GITHUB_TOKEN}}
