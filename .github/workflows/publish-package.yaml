@@ -1,36 +1,43 @@
-name: Publish NPM Package on Push to Main
+name: Publish GitHub NPM Package
 
 on:
-    push:
-        branches:
-            - main
+  push:
+    branches:
+      - main
+    paths:
+      - tsconfig-project/**
+  workflow_dispatch:
 
 jobs:
-    publish:
-        runs-on: ubuntu-latest
+  npm-publish:
+    runs-on: ubuntu-latest
 
-        steps:
-            - name: Checkout Repository
-              uses: actions/checkout@v2
+    defaults:
+      run:
+        working-directory: tsconfig-project
 
-            - name: Set Up Node.js
-              uses: actions/setup-node@v3
-              with:
-                  node-version: 14
+    strategy:
+      fail-fast: true
 
-            - name: Install Dependencies
-              run: npm install
+    steps:
+      - uses: actions/checkout@v2
 
-            - name: Build Package
-              run: npm run arrange && ng build --watch
+      - name: Setup Node.js 16
+        uses: actions/setup-node@v2
+        with:
+          node-version: "16.x"
 
-            - name: Publish Package
-              if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-              run: |
-                  if [ -n "${GITHUB_TOKEN}" ]; then
-                    npm publish --access public
-                  else
-                    echo "GITHUB_TOKEN is missing. Unable to publish NPM package."
-                  fi
-              env:
-                  NODE_AUTH_TOKEN: ${{secrets.GITHUB_TOKEN}}
+      - run: git config user.email "scottwestover2006@gmail.com"
+      - run: git config user.name "@github-ci"
+      - run: yarn version --patch --message "Bump version to %s"
+
+      - run: git push
+      - run: git push --follow-tags
+
+      - name: publish to github
+        run: |
+          npm config set registry https://npm.pkg.github.com
+          npm set //npm.pkg.github.com/:_authToken ${{ env.NODE_AUTH_TOKEN }}
+          npm run publish:github
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
