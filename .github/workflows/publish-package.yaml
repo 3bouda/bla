@@ -9,6 +9,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
+        with:
+          path: ~/**
 
       - name: Use Node.js 18
         uses: actions/setup-node@v3
@@ -20,8 +22,6 @@ jobs:
 
       - name: Build the library
         run: ng build --prod
-        with:
-          path: ~/aprilPdf/aprilPdf/**
 
       - name: Archive the build output
         uses: actions/upload-artifact@v3
