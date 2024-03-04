@@ -1,37 +1,52 @@
-name: Publish GitHub NPM Package
+name: Build and Publish Library
 
 on:
   push:
-    branches:
-      - main
-
-  workflow_dispatch:
+    branches: main
 
 jobs:
-  npm-publish:
+  build-and-publish:
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      pull-requests: write
-    strategy:
-      fail-fast: true
+    steps:
+      - uses: actions/checkout@v3
 
-    steps:       
-      - uses: actions/checkout@v2
-  
-      - name: Setup Node.js 16
-        uses: actions/setup-node@v2
+      - name: Use Node.js 16
+        uses: actions/setup-node@v3
         with:
-          node-version: "16.x"
-      - run: git push
-      - run: git push --follow-tags
-      - uses: actions/labeler@v4
+          node-version: 16
+      - name: Install dependencies
+        run: npm install
+
+      - name: Build the library
+        run: ng build aprilPdf
+
+      - name: Archive the build output
+        uses: actions/upload-artifact@v3
         with:
-          repo-token: ${{ secrets.GITHUB_TOKEN }}
-      - name: publish to github
+          name: library-dist
+          path: dist/april-pdf
+
+      - name: Login to npm (if publishing publicly)
         run: |
-          npm config set registry https://npm.pkg.github.com
-          npm set //npm.pkg.github.com/:_authToken ${{ env.NODE_AUTH_TOKEN }}
-          npm run publish:github
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          if [ ${{ secrets.NPM_TOKEN }} ]; then
+            echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}" >> ~/.npmrc
+            echo "Successfully logged in to npm registry"
+          else
+            echo "Skipping npm login as NPM_TOKEN is not provided"
+          fi
+
+      - name: Publish the library (if publishing publicly)
+        uses: actions/upload-artifact@v3
+        with:
+          name: library-npm
+          path: ~/.npmrc
+
+      - name: Deploy to npm (if publishing publicly)
+        run: |
+          if [ ${{ secrets.NPM_TOKEN }} ]; then
+            cd dist  # Change directory to the build output
+            npm publish --access public  # Publish with public access
+            echo "Successfully published library to npm"
+          else
+            echo "Skipping npm publish as NPM_TOKEN is not provided"
+          fi
