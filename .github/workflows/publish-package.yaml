@@ -4,25 +4,21 @@ on:
   push:
     branches: main
 
-
 jobs:
   build-and-publish:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
         with:
-          path: aprilPdf/**
+          path: ./aprilPdf
 
-      -   name: Use Node.js 18
-          uses: actions/setup-node@v3
-          with:
-            node-version: 18.13
+      - name: Use Node.js 18
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18.13
+
       - name: Install dependencies
         run: npm install
-      - name: Install Angular CLI globally
-        run: npm install -g @angular/cli
-
-
 
       - name: Build the library
         run: ng build --prod
@@ -31,7 +27,7 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: library-dist
-          path: dist/april-pdf
+          path: dist/
 
       - name: Login to npm (if publishing publicly)
         run: |
