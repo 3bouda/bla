@@ -10,7 +10,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
         with:
-          path: ./april-pdf
+          path: ~/aprilPdf/aprilPdf/**
 
       - name: Use Node.js 18
         uses: actions/setup-node@v3
