@@ -21,7 +21,7 @@ jobs:
 
       - uses: actions/checkout@v3
         with:
-          path: aprilPdf
+          path: ./april-pdf
       - name: Build the library
         run: ng build --prod
 
