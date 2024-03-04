@@ -19,7 +19,10 @@ jobs:
       - name: Install Angular CLI globally
         run: npm install -g @angular/cli
       - name: Build the library
-        run: ng build --prod
+      -   uses: actions/checkout@v3
+          with:
+            path: ./aprilPdf
+          run: ng build --prod
 
       - name: Archive the build output
         uses: actions/upload-artifact@v3
