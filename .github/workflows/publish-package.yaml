@@ -18,7 +18,7 @@ jobs:
         run: npm install
 
       - name: Build the library
-        run: ng build
+        run: ng build --prod
 
       - name: Archive the build output
         uses: actions/upload-artifact@v3
