@@ -18,7 +18,8 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: 18.13
-
+      - name: Install Angular CLI globally
+        run: npm install -g @angular/cli
       - name: Install dependencies
         run: npm install
 
