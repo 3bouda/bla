@@ -35,10 +35,10 @@ jobs:
       - name: Login to npm (if publishing publicly)
         run: |
           if [ ${{ secrets.ACCESS_TOKEN }} ]; then
-            echo "//registry.npmjs.org/:_authToken=${{ secrets.ACCESS_TOKENB }}" >> ~/.npmrc
+            echo "//registry.npmjs.org/:_authToken=${{ secrets.ACCESS_TOKEN }}" >> ~/.npmrc
             echo "Successfully logged in to npm registry"
           else
-            echo "Skipping npm login as ACCESS_TOKENB is not provided"
+            echo "Skipping npm login as ACCESS_TOKEN is not provided"
           fi
 
       - name: Publish the library (if publishing publicly)
@@ -49,10 +49,10 @@ jobs:
 
       - name: Deploy to npm (if publishing publicly)
         run: |
-          if [ ${{ secrets.ACCESS_TOKENB }} ]; then
+          if [ ${{ secrets.ACCESS_TOKEN }} ]; then
             cd dist  # Change directory to the build output
             npm publish --access public  # Publish with public access
             echo "Successfully published library to npm"
           else
-            echo "Skipping npm publish as ACCESS_TOKENB is not provided"
+            echo "Skipping npm publish as ACCESS_TOKEN is not provided"
           fi
