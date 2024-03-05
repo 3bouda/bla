@@ -1,6 +1,10 @@
 {
   "name": "april-pdf",
   "version": "0.0.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/3bouda/blabib.git"
+  },
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
